@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@font-face {
+  font-family: "Alexandra";
+  font-weight: 400;
+  src: url("/fonts/Alexandria/static/Alexandria-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Alexandra";
+  font-weight: bold;
+  src: url("/fonts/Alexandria/static/Alexandria-Bold.ttf");
+}
+
+@font-face {
+  font-family: "Alexandra";
+  font-weight: 900;
+  src: url("/fonts/Alexandria/static/Alexandria-Black.ttf");
+}
