@@ -67,8 +67,14 @@ const ToDo = ({ task }) => {
   return (
     <>
       {/* Remove Dialog */}
-      <Dialog open={openRemoveDialog} onClose={handleRemoveCancel} disableRestoreFocus>
-        <DialogTitle>{"Are you sure you want to remove this task?"}</DialogTitle>
+      <Dialog
+        open={openRemoveDialog}
+        onClose={handleRemoveCancel}
+        disableRestoreFocus
+      >
+        <DialogTitle>
+          {"Are you sure you want to remove this task?"}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
             Are you sure you want to remove this task?
@@ -80,7 +86,11 @@ const ToDo = ({ task }) => {
         </DialogActions>
       </Dialog>
       {/* Edit Dialog */}
-      <Dialog open={openEditDialog} onClose={handleEditCancel} disableRestoreFocus>
+      <Dialog
+        open={openEditDialog}
+        onClose={handleEditCancel}
+        disableRestoreFocus
+      >
         <DialogTitle>{"Are you sure you want to edit this task?"}</DialogTitle>
         <DialogContent>
           <TextField
