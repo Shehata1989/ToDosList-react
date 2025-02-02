@@ -1,23 +1,28 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useCallback } from "react";
+import { createContext, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const TodoContext = createContext(null);
 
 export const TodoContextProvider = ({ children }) => {
   const [tasks, setTasks] = useState(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    return savedTasks ? JSON.parse(savedTasks) : [];
+    try {
+      const savedTasks = localStorage.getItem("tasks");
+      return savedTasks ? JSON.parse(savedTasks) : [];
+    } catch (error) {
+      console.error("Error parsing tasks from localStorage:", error);
+      return [];
+    }
   });
 
+
   useEffect(() => {
-    if (tasks.length > 0) {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-    } else {
-      localStorage.removeItem("tasks");
-    }
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }, [tasks]);
+
 
   const addTask = (taskName) => {
     const newTask = {
@@ -26,7 +31,10 @@ export const TodoContextProvider = ({ children }) => {
       details: "",
       isCompleted: false,
     };
-    setTasks((prevTasks) => [...prevTasks, newTask]);
+    setTasks((prevTasks) => {
+      const updatedTasks = [...prevTasks, newTask];
+      return updatedTasks;
+    });
   };
 
   const removeTask = (taskId) => {
@@ -47,16 +55,15 @@ export const TodoContextProvider = ({ children }) => {
     });
   };
 
-  const isCompleted = (taskId) => {
+  const isCompleted = useCallback((taskId) => {
     setTasks((prevTasks) => {
       const updatedTasks = prevTasks.map((task) =>
-        task.id === taskId
-          ? { ...task, isCompleted: !task.isCompleted }
-          : task
+        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
       );
+      localStorage.setItem("tasks", JSON.stringify(updatedTasks));
       return updatedTasks;
     });
-  };
+  }, []);
 
   return (
     <TodoContext.Provider
