@@ -1,14 +1,13 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react-refresh/only-export-components */
-import { useEffect } from "react";
-import { useCallback } from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export const TodoContext = createContext(null);
 
 export const TodoContextProvider = ({ children }) => {
   const [tasks, setTasks] = useState(() => {
+
     try {
       const savedTasks = localStorage.getItem("tasks");
       return savedTasks ? JSON.parse(savedTasks) : [];
@@ -17,6 +16,7 @@ export const TodoContextProvider = ({ children }) => {
       return [];
     }
   });
+
 
 
   useEffect(() => {

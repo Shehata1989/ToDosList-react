@@ -19,9 +19,11 @@ import Container from "@mui/material/Container";
 import { useState, useEffect, useMemo } from "react";
 import { useTodoContext } from "../TodoContext/TodoContext";
 import ToDo from "./ToDo";
+import { useSnackBarContext } from "../TodoContext/SnackBarContext";
 
 const ToDoList = () => {
   const { tasks, addTask, removeTask, updateTask } = useTodoContext();
+  const { handleClick } = useSnackBarContext();
   const [task, setTask] = useState({});
   const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("all");
@@ -32,6 +34,7 @@ const ToDoList = () => {
 
   // Filter Todos
   const filteredTasks = useMemo(() => {
+
     return tasks.filter((task) => {
       if (filter === "completed") return task.isCompleted;
       if (filter === "not-completed") return !task.isCompleted;
@@ -48,24 +51,26 @@ const ToDoList = () => {
     setOpenRemoveDialog((prev) => !prev);
   };
 
-  const handleRemoveConfirm = () => {
-    removeTask(task.id);
-    setOpenRemoveDialog(false);
-  };
-
   const handelEditDialogOpen = (task) => {
     setTask(task);
     setNewTaskName(task?.taskName || "");
     setNewDetails(task?.details || "");
     setOpenEditDialog(true);
   };
-  
 
   const handelEditDialogClose = () => {
     setOpenEditDialog((prev) => !prev);
   };
 
-  const handleEditUpdate = useCallback(() => {
+  const handelAddTask = () => {
+    if (title.trim() !== "") {
+      addTask(title);
+      handleClick("Task added successfully");
+      setTitle("");
+    }
+  };
+
+  const handleEditUpdate = () => {
     if (
       task &&
       (newTaskName.trim() !== task.taskName ||
@@ -73,11 +78,15 @@ const ToDoList = () => {
     ) {
       updateTask(task.id, newTaskName.trim(), newDetails.trim());
       setOpenEditDialog(false);
+      handleClick("Task updated successfully");
     }
-  }, [newTaskName, newDetails, task]);
+  };
 
-
-
+  const handleRemoveConfirm = () => {
+    removeTask(task.id);
+    setOpenRemoveDialog(false);
+    handleClick("Task removed successfully");
+  };
 
   const handleEnterKey = useCallback(
     (e) => {
@@ -88,19 +97,25 @@ const ToDoList = () => {
           handleRemoveConfirm();
         } else if (title.trim() !== "") {
           addTask(title.trim());
+          handleClick("Task added successfully");
           setTitle("");
         }
       }
     },
-    [title, openEditDialog, openRemoveDialog, handleEditUpdate, handleRemoveConfirm, addTask]
+    [
+      title,
+      openEditDialog,
+      openRemoveDialog,
+      handleEditUpdate,
+      handleRemoveConfirm,
+      addTask,
+    ]
   );
-  
 
   useEffect(() => {
     document.addEventListener("keydown", handleEnterKey);
     return () => document.removeEventListener("keydown", handleEnterKey);
   }, [handleEnterKey]); // فقط دالة `handleEnterKey`
-
 
   const todosJsx = filteredTasks.map((task) => (
     <ToDo
@@ -210,12 +225,7 @@ const ToDoList = () => {
               </Grid>
               <Grid size={4}>
                 <Button
-                  onClick={() => {
-                    if (title.trim() !== "") {
-                      addTask(title);
-                      setTitle("");
-                    }
-                  }}
+                  onClick={handelAddTask}
                   className="!w-full h-full"
                   variant="contained"
                 >

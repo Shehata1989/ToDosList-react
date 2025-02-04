@@ -3,6 +3,8 @@ import "./App.css";
 import ToDoList from "./Components/ToDoList";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TodoContextProvider } from "./TodoContext/TodoContext";
+import SnackBar from "./Components/SnackBar";
+import { SnackBarProvider } from "./TodoContext/SnackBarContext";
 
 const theme = createTheme({
   typography: {
@@ -23,10 +25,13 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <TodoContextProvider>
-        <CssBaseline />
-        <div className="flex items-center justify-center min-h-screen text-center App">
-          <ToDoList />
-        </div>
+        <SnackBarProvider>
+          <CssBaseline />
+          <div className="flex items-center justify-center min-h-screen text-center App">
+            <SnackBar />
+            <ToDoList />
+          </div>
+        </SnackBarProvider>
       </TodoContextProvider>
     </ThemeProvider>
   );

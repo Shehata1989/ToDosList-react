@@ -11,6 +11,8 @@ import React from "react";
 
 
 const DialogComponent = ({ open, handleClose, title, content, onConfirm }) => {
+
+  
   if (!open) return null;
   return (
     <Dialog open={open} onClose={handleClose} disableRestoreFocus>

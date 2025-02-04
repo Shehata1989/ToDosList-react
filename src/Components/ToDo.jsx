@@ -14,15 +14,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import { useTodoContext } from "../TodoContext/TodoContext";
-import { useCallback } from "react";
+import { useSnackBarContext } from "../TodoContext/SnackBarContext";
 
 const ToDo = ({ task, showDialog }) => {
-
   const { isCompleted } = useTodoContext();
+  const { handleClick } = useSnackBarContext();
 
-  const handelIsCompleted = useCallback(() => {
+  const handelIsCompleted = () => {
     isCompleted(task.id);
-  }, [isCompleted, task.id]);
+   if (!task.isCompleted) {
+    handleClick("Task completed successfully");
+   } else {
+    handleClick("Task uncompleted successfully");
+   }
+  };
 
   return (
     <>
