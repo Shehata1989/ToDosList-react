@@ -12,6 +12,7 @@ export const SnackBarProvider = ({ children }) => {
   // eslint-disable-next-line no-unused-vars
   const [openToast, setOpenToast] = useState({
     open: false,
+    message: "",
     Transition: Fade,
   });
 

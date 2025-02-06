@@ -16,74 +16,89 @@ import DialogComponent from "./DialogComponent";
 
 import Grid from "@mui/material/Grid2";
 import Container from "@mui/material/Container";
-import { useState, useEffect, useMemo } from "react";
-import { useTodoContext } from "../TodoContext/TodoContext";
+import { useState, useEffect, useMemo, useReducer } from "react";
 import ToDo from "./ToDo";
 import { useSnackBarContext } from "../TodoContext/SnackBarContext";
+import { todosReducer } from "../Reducer/todosReducer";
+import { useTodosContext } from "../TodoContext/TodosContext";
 
 const ToDoList = () => {
-  const { tasks, addTask, removeTask, updateTask } = useTodoContext();
+  console.log("render todo list");
+
+  const [title, setTitle] = useState("");
   const { handleClick } = useSnackBarContext();
   const [task, setTask] = useState({});
-  const [title, setTitle] = useState("");
   const [filter, setFilter] = useState("all");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
-  const [newTaskName, setNewTaskName] = useState("");
-  const [newDetails, setNewDetails] = useState("");
+  const [updateInput, setUpdateInput] = useState({
+    newTaskName: "",
+    newDetails: "",
+  });
+
+  const { todos, dispatch } = useTodosContext();
 
   // Filter Todos
   const filteredTasks = useMemo(() => {
-
-    return tasks.filter((task) => {
-      if (filter === "completed") return task.isCompleted;
-      if (filter === "not-completed") return !task.isCompleted;
+    return todos.filter((todo) => {
+      if (filter === "completed") return todo.isCompleted;
+      if (filter === "not-completed") return !todo.isCompleted;
       return true;
     });
-  }, [tasks, filter]);
+  }, [todos, filter]);
 
-  const handelRemoveDialogOpen = (task) => {
+  const handleTitleChange = useCallback((e) => {
+    setTitle(e.target.value);
+  }, []);
+
+  const handelRemoveDialogOpen = useCallback((task) => {
     setTask(task);
     setOpenRemoveDialog((prev) => !prev);
-  };
+  }, []);
 
   const handelRemoveDialogClose = () => {
     setOpenRemoveDialog((prev) => !prev);
   };
 
-  const handelEditDialogOpen = (task) => {
+  const handelEditDialogOpen = useCallback((task) => {
     setTask(task);
-    setNewTaskName(task?.taskName || "");
-    setNewDetails(task?.details || "");
+    setUpdateInput({ newTaskName: task?.taskName, newDetails: task?.details });
     setOpenEditDialog(true);
-  };
+  }, []);
 
   const handelEditDialogClose = () => {
     setOpenEditDialog((prev) => !prev);
   };
 
   const handelAddTask = () => {
-    if (title.trim() !== "") {
-      addTask(title);
-      handleClick("Task added successfully");
-      setTitle("");
-    }
+    if (!title.trim()) return;
+    dispatch({
+      type: "ADD_TASK",
+      payload: {
+        taskName: title,
+      },
+    });
+    handleClick("Task added successfully");
+    setTitle("");
   };
 
   const handleEditUpdate = () => {
-    if (
-      task &&
-      (newTaskName.trim() !== task.taskName ||
-        newDetails.trim() !== task.details)
-    ) {
-      updateTask(task.id, newTaskName.trim(), newDetails.trim());
-      setOpenEditDialog(false);
-      handleClick("Task updated successfully");
-    }
+    dispatch({
+      type: "UPDATE_TASK",
+      payload: {
+        task: task,
+        updateInput: updateInput,
+      },
+    });
+    handleClick("Task updated successfully");
+    setOpenEditDialog((prev) => !prev);
   };
 
   const handleRemoveConfirm = () => {
-    removeTask(task.id);
+    dispatch({
+      type: "REMOVE_TASK",
+      payload: task.id,
+    });
     setOpenRemoveDialog(false);
     handleClick("Task removed successfully");
   };
@@ -96,9 +111,7 @@ const ToDoList = () => {
         } else if (openRemoveDialog) {
           handleRemoveConfirm();
         } else if (title.trim() !== "") {
-          addTask(title.trim());
-          handleClick("Task added successfully");
-          setTitle("");
+          handelAddTask();
         }
       }
     },
@@ -108,7 +121,6 @@ const ToDoList = () => {
       openRemoveDialog,
       handleEditUpdate,
       handleRemoveConfirm,
-      addTask,
     ]
   );
 
@@ -117,13 +129,17 @@ const ToDoList = () => {
     return () => document.removeEventListener("keydown", handleEnterKey);
   }, [handleEnterKey]); // فقط دالة `handleEnterKey`
 
-  const todosJsx = filteredTasks.map((task) => (
-    <ToDo
-      key={task.id}
-      task={task}
-      showDialog={{ handelRemoveDialogOpen, handelEditDialogOpen }}
-    />
-  ));
+  const todosJsx = useMemo(
+    () =>
+      filteredTasks.map((task) => (
+        <ToDo
+          key={task.id}
+          task={task}
+          showDialog={{ handelRemoveDialogOpen, handelEditDialogOpen }}
+        />
+      )),
+    [filteredTasks]
+  );
 
   return (
     <>
@@ -146,18 +162,22 @@ const ToDoList = () => {
             <TextField
               fullWidth
               margin="dense"
-              value={newTaskName}
+              value={updateInput.newTaskName}
               label="New Task Name"
               variant="outlined"
-              onChange={(e) => setNewTaskName(e.target.value)}
+              onChange={(e) =>
+                setUpdateInput({ ...updateInput, newTaskName: e.target.value })
+              }
             />
             <TextField
               fullWidth
               margin="dense"
-              value={newDetails}
+              value={updateInput.newDetails}
               label="Details"
               variant="outlined"
-              onChange={(e) => setNewDetails(e.target.value)}
+              onChange={(e) =>
+                setUpdateInput({ ...updateInput, newDetails: e.target.value })
+              }
             />
           </>
         }
@@ -220,7 +240,7 @@ const ToDoList = () => {
                   label="Add Task"
                   variant="outlined"
                   className="!w-full !h-full"
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={handleTitleChange}
                 />
               </Grid>
               <Grid size={4}>

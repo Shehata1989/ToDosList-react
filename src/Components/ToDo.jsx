@@ -8,25 +8,27 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import React from "react";
 import Grid from "@mui/material/Grid2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
-import { useTodoContext } from "../TodoContext/TodoContext";
 import { useSnackBarContext } from "../TodoContext/SnackBarContext";
-
+import { useTodosContext } from "../TodoContext/TodosContext";
+import React from "react";
 const ToDo = ({ task, showDialog }) => {
-  const { isCompleted } = useTodoContext();
+  console.log("render todo");
   const { handleClick } = useSnackBarContext();
+  const { handelRemoveDialogOpen, handelEditDialogOpen } = showDialog;
+  const { dispatch} = useTodosContext();
+
 
   const handelIsCompleted = () => {
-    isCompleted(task.id);
-   if (!task.isCompleted) {
-    handleClick("Task completed successfully");
-   } else {
-    handleClick("Task uncompleted successfully");
-   }
+    dispatch({ type: "COMPLETE_TASK", payload: task.id });
+    if (!task.isCompleted) {
+      handleClick("Task completed successfully");
+    } else {
+      handleClick("Task uncompleted successfully");
+    }
   };
 
   return (
@@ -64,7 +66,7 @@ const ToDo = ({ task, showDialog }) => {
                       : "!text-green-500 bg-white hover:bg-slate-300"
                   }`}
                   style={{ border: "2px solid" }}
-                  onClick={() => handelIsCompleted()}
+                  onClick={handelIsCompleted}
                 >
                   <CheckOutlinedIcon />
                 </IconButton>
@@ -72,7 +74,7 @@ const ToDo = ({ task, showDialog }) => {
                 <IconButton
                   className="!text-blue-500 bg-white hover:bg-slate-300"
                   style={{ border: "2px solid" }}
-                  onClick={() => showDialog.handelEditDialogOpen(task)}
+                  onClick={() => handelEditDialogOpen(task)}
                 >
                   <EditOutlinedIcon />
                 </IconButton>
@@ -80,7 +82,7 @@ const ToDo = ({ task, showDialog }) => {
                 <IconButton
                   className="!text-red-500 bg-white hover:bg-slate-300"
                   style={{ border: "2px solid" }}
-                  onClick={() => showDialog.handelRemoveDialogOpen(task)}
+                  onClick={() => handelRemoveDialogOpen(task)}
                 >
                   <DeleteIcon />
                 </IconButton>

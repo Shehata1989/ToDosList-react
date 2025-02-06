@@ -2,7 +2,7 @@ import { CssBaseline } from "@mui/material";
 import "./App.css";
 import ToDoList from "./Components/ToDoList";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { TodoContextProvider } from "./TodoContext/TodoContext";
+import { TodosContextProvider } from "./TodoContext/TodosContext";
 import SnackBar from "./Components/SnackBar";
 import { SnackBarProvider } from "./TodoContext/SnackBarContext";
 
@@ -24,7 +24,7 @@ const theme = createTheme({
 function App() {
   return (
     <ThemeProvider theme={theme}>
-      <TodoContextProvider>
+      <TodosContextProvider>
         <SnackBarProvider>
           <CssBaseline />
           <div className="flex items-center justify-center min-h-screen text-center App">
@@ -32,7 +32,7 @@ function App() {
             <ToDoList />
           </div>
         </SnackBarProvider>
-      </TodoContextProvider>
+      </TodosContextProvider>
     </ThemeProvider>
   );
 }
