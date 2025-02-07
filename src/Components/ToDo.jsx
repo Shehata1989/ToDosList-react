@@ -14,22 +14,20 @@ import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import CheckOutlinedIcon from "@mui/icons-material/CheckOutlined";
 import { useSnackBarContext } from "../TodoContext/SnackBarContext";
 import { useTodosContext } from "../TodoContext/TodosContext";
-import React from "react";
+import React, { useCallback } from "react";
 const ToDo = ({ task, showDialog }) => {
   console.log("render todo");
-  const { handleClick } = useSnackBarContext();
+
+  const { handleClickSnackBar } = useSnackBarContext();
   const { handelRemoveDialogOpen, handelEditDialogOpen } = showDialog;
   const { dispatch} = useTodosContext();
 
 
-  const handelIsCompleted = () => {
+  const handelIsCompleted = useCallback(() => {
     dispatch({ type: "COMPLETE_TASK", payload: task.id });
-    if (!task.isCompleted) {
-      handleClick("Task completed successfully");
-    } else {
-      handleClick("Task uncompleted successfully");
-    }
-  };
+    handleClickSnackBar(task.isCompleted ? "Task uncompleted successfully" : "Task completed successfully");
+  }, [dispatch, task.id, task.isCompleted, handleClickSnackBar]);
+  
 
   return (
     <>
@@ -95,4 +93,6 @@ const ToDo = ({ task, showDialog }) => {
   );
 };
 
-export default React.memo(ToDo);
+export default React.memo(ToDo, (prevProps, nextProps) => {
+  return prevProps.task === nextProps.task; // سيمنع إعادة التصيير إذا لم تتغير `task`
+});

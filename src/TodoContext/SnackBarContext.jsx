@@ -20,7 +20,7 @@ export const SnackBarProvider = ({ children }) => {
     return <Slide {...props} direction="up" />;
   }
 
-  const handleClick = (message, Transition = SlideTransition) => {
+  const handleClickSnackBar = (message, Transition = SlideTransition) => {
     setOpenToast({
       open: true,
       message: message,
@@ -38,7 +38,7 @@ export const SnackBarProvider = ({ children }) => {
 
   return (
     <SnackBarContext.Provider
-      value={{ openToast, handleClick, handleClose }}
+      value={{ openToast, handleClickSnackBar, handleClose }}
     >
       {children}
     </SnackBarContext.Provider>

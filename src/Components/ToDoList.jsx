@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
+// Material Ui
 import {
   Button,
   Card,
@@ -11,22 +12,20 @@ import {
   ToggleButtonGroup,
   Typography,
 } from "@mui/material";
-import React, { useCallback } from "react";
 import DialogComponent from "./DialogComponent";
-
 import Grid from "@mui/material/Grid2";
 import Container from "@mui/material/Container";
-import { useState, useEffect, useMemo, useReducer } from "react";
-import ToDo from "./ToDo";
+// React
+import { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { useSnackBarContext } from "../TodoContext/SnackBarContext";
-import { todosReducer } from "../Reducer/todosReducer";
 import { useTodosContext } from "../TodoContext/TodosContext";
+import ToDo from "./ToDo";
 
 const ToDoList = () => {
   console.log("render todo list");
 
   const [title, setTitle] = useState("");
-  const { handleClick } = useSnackBarContext();
+  const { handleClickSnackBar } = useSnackBarContext();
   const [task, setTask] = useState({});
   const [filter, setFilter] = useState("all");
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -78,7 +77,7 @@ const ToDoList = () => {
         taskName: title,
       },
     });
-    handleClick("Task added successfully");
+    handleClickSnackBar("Task added successfully");
     setTitle("");
   };
 
@@ -90,7 +89,7 @@ const ToDoList = () => {
         updateInput: updateInput,
       },
     });
-    handleClick("Task updated successfully");
+    handleClickSnackBar("Task updated successfully");
     setOpenEditDialog((prev) => !prev);
   };
 
@@ -100,7 +99,7 @@ const ToDoList = () => {
       payload: task.id,
     });
     setOpenRemoveDialog(false);
-    handleClick("Task removed successfully");
+    handleClickSnackBar("Task removed successfully");
   };
 
   const handleEnterKey = useCallback(
@@ -264,4 +263,6 @@ const ToDoList = () => {
   );
 };
 
-export default React.memo(ToDoList);
+export default memo(ToDoList, (prevProps, nextProps) => {
+  return prevProps.tasks === nextProps.tasks;
+});
