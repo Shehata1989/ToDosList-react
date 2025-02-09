@@ -28,7 +28,6 @@ export const SnackBarProvider = ({ children }) => {
     });
   };
 
-
   const handleClose = () => {
     setOpenToast({
       ...openToast,

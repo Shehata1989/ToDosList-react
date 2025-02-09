@@ -26,13 +26,13 @@ const ToDoList = () => {
   console.log("render todo list");
 
   const inputRef = useRef(null);
+  const newTaskNameRef = useRef(null);
+  const newDetailsRef = useRef(null);
   const { handleClickSnackBar } = useSnackBarContext();
   const [task, setTask] = useState({});
   const [filter, setFilter] = useState("all");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
-  const newTaskNameRef = useRef(null);
-  const newDetailsRef = useRef(null);
 
   const { todos, dispatch } = useTodosContext();
 
