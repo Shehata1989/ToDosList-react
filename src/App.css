@@ -1,0 +1,27 @@
+.App {
+  background-image: linear-gradient(
+    to right top,
+    #040f21,
+    #021c2b,
+    #012834,
+    #063339,
+    #163f3d
+  );
+}
+
+.card-todo {
+  transition: box-shadow 0.3s ease-in-out;
+  color: white !important;
+  background-image: linear-gradient(
+    to right bottom,
+    #021c2b,
+    #021c2b,
+    #012834,
+    #063339,
+    #163f3d
+  ) !important;
+}
+.card-todo:hover {
+  box-shadow: 0px 3px 12px #163f3d;
+}
+
