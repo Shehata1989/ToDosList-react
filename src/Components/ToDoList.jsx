@@ -25,7 +25,7 @@ const ToDoList = () => {
   console.log("render todo list");
 
   const [title, setTitle] = useState("");
-  const { handleClickSnackBar } = useSnackBarContext();
+  const { openSnackBar } = useSnackBarContext();
   const [task, setTask] = useState({});
   const [filter, setFilter] = useState("all");
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -46,18 +46,18 @@ const ToDoList = () => {
     });
   }, [todos, filter]);
 
-  const handleTitleChange = useCallback((e) => {
+  const handleTitleChange = (e) => {
     setTitle(e.target.value);
-  }, []);
+  };
 
   const handelRemoveDialogOpen = useCallback((task) => {
     setTask(task);
     setOpenRemoveDialog((prev) => !prev);
   }, []);
 
-  const handelRemoveDialogClose = () => {
+  const handelRemoveDialogClose = useCallback(() => {
     setOpenRemoveDialog((prev) => !prev);
-  };
+  }, []);
 
   const handelEditDialogOpen = useCallback((task) => {
     setTask(task);
@@ -77,30 +77,30 @@ const ToDoList = () => {
         taskName: title,
       },
     });
-    handleClickSnackBar("Task added successfully");
+    openSnackBar("Task added successfully");
     setTitle("");
   };
 
-  const handleEditUpdate = () => {
+  const handleEditUpdate = useCallback(() => {
     dispatch({
       type: "UPDATE_TASK",
       payload: {
-        task: task,
-        updateInput: updateInput,
+        task,
+        updateInput,
       },
     });
-    handleClickSnackBar("Task updated successfully");
-    setOpenEditDialog((prev) => !prev);
-  };
+    openSnackBar("Task updated successfully");
+    setOpenEditDialog(false);
+  }, [dispatch, task, updateInput, openSnackBar]);
 
-  const handleRemoveConfirm = () => {
+  const handleRemoveConfirm = useCallback(() => {
     dispatch({
       type: "REMOVE_TASK",
-      payload: task.id,
+      payload: { task },
     });
     setOpenRemoveDialog(false);
-    handleClickSnackBar("Task removed successfully");
-  };
+    openSnackBar("Task removed successfully");
+  }, [dispatch, task, openSnackBar]);
 
   const handleEnterKey = useCallback(
     (e) => {
@@ -115,18 +115,21 @@ const ToDoList = () => {
       }
     },
     [
-      title,
+      (title,
       openEditDialog,
       openRemoveDialog,
       handleEditUpdate,
       handleRemoveConfirm,
+      handelAddTask),
     ]
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleEnterKey);
-    return () => document.removeEventListener("keydown", handleEnterKey);
-  }, [handleEnterKey]); // فقط دالة `handleEnterKey`
+    const keyListener = (e) => handleEnterKey(e);
+    document.addEventListener("keydown", keyListener);
+    return () => document.removeEventListener("keydown", keyListener);
+  }, [handleEnterKey]);
+  
 
   const todosJsx = useMemo(
     () =>
@@ -214,7 +217,7 @@ const ToDoList = () => {
             {/* فلترة المهام */}
             <ToggleButtonGroup
               value={filter}
-              onChange={(e, newValue) => {
+              onChange={(_, newValue) => {
                 if (newValue) setFilter(newValue);
               }}
               exclusive

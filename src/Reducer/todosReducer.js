@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 export const todosReducer = (todos, action) => {
 
   const { taskName, task, updateInput } = action.payload;
+  console.log(task)
 
   switch (action.type) {
     case "ADD_TASK": {
@@ -16,7 +17,7 @@ export const todosReducer = (todos, action) => {
     }
 
     case "REMOVE_TASK": {
-      const newTodos = todos.filter((todo) => todo.id !== action.payload);
+      const newTodos = todos.filter((todo) => todo.id !== task.id);
       return newTodos;
     }
 
@@ -42,10 +43,10 @@ export const todosReducer = (todos, action) => {
     }
 
     case "COMPLETE_TASK": {
-      const updatedTasks = todos.map((task) =>
-        task.id === action.payload
-          ? { ...task, isCompleted: !task.isCompleted }
-          : task
+      const updatedTasks = todos.map((todo) =>
+        todo.id === task.id
+          ? { ...todo, isCompleted: !todo.isCompleted }
+          : todo
       );
       return updatedTasks;
     }
