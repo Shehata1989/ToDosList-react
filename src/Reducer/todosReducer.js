@@ -1,9 +1,6 @@
-
 import { v4 as uuidv4 } from "uuid";
 export const todosReducer = (todos, action) => {
-
-  const { taskName, task, updateInput } = action.payload;
-  console.log(task)
+  const { taskName, task, newTaskName, newDetails } = action.payload;
 
   switch (action.type) {
     case "ADD_TASK": {
@@ -17,22 +14,22 @@ export const todosReducer = (todos, action) => {
     }
 
     case "REMOVE_TASK": {
-      const newTodos = todos.filter((todo) => todo.id !== task.id);
+      const newTodos = todos.filter((todo) => todo.id !== action.payload);
       return newTodos;
     }
 
     case "UPDATE_TASK": {
       if (
         task &&
-        (updateInput.newTaskName?.trim() !== task.taskName ||
-          updateInput.newDetails?.trim() !== task.details)
+        (newTaskName?.trim() !== task.taskName ||
+          newDetails?.trim() !== task.details)
       ) {
         const newTodos = todos.map((todo) => {
           if (todo.id === task.id) {
             return {
               ...todo,
-              taskName: updateInput.newTaskName,
-              details: updateInput.newDetails,
+              taskName: newTaskName,
+              details: newDetails,
             };
           }
           return todo;
@@ -43,10 +40,10 @@ export const todosReducer = (todos, action) => {
     }
 
     case "COMPLETE_TASK": {
-      const updatedTasks = todos.map((todo) =>
-        todo.id === task.id
-          ? { ...todo, isCompleted: !todo.isCompleted }
-          : todo
+      const updatedTasks = todos.map((task) =>
+        task.id === action.payload
+          ? { ...task, isCompleted: !task.isCompleted }
+          : task
       );
       return updatedTasks;
     }

@@ -18,15 +18,15 @@ import React, { useCallback } from "react";
 const ToDo = ({ task, showDialog }) => {
   console.log("render todo");
 
-  const { openSnackBar } = useSnackBarContext();
+  const { handleClickSnackBar } = useSnackBarContext();
   const { handelRemoveDialogOpen, handelEditDialogOpen } = showDialog;
   const { dispatch} = useTodosContext();
 
 
   const handelIsCompleted = useCallback(() => {
-    dispatch({ type: "COMPLETE_TASK", payload: {task} });
-    openSnackBar(task.isCompleted ? "Task uncompleted successfully" : "Task completed successfully");
-  }, [dispatch, task, openSnackBar]);
+    dispatch({ type: "COMPLETE_TASK", payload: task.id });
+    handleClickSnackBar(task.isCompleted ? "Task uncompleted successfully" : "Task completed successfully");
+  }, [dispatch, task.id, task.isCompleted, handleClickSnackBar]);
   
 
   return (

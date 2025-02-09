@@ -10,33 +10,36 @@ export const SnackBarContext = createContext(null);
 
 export const SnackBarProvider = ({ children }) => {
   // eslint-disable-next-line no-unused-vars
+  const [openToast, setOpenToast] = useState({
+    open: false,
+    message: "",
+    Transition: Fade,
+  });
 
-  const initialToast = { open: false, message: "", Transition: Fade };
-  const [openToast, setOpenToast] = useState(initialToast);
-
-  // Animation for SnackBar
   function SlideTransition(props) {
     return <Slide {...props} direction="up" />;
   }
 
-  const openSnackBar = (message, Transition = SlideTransition) => {
-    setOpenToast((prev) => ({
-      ...prev,
+  const handleClickSnackBar = (message, Transition = SlideTransition) => {
+    setOpenToast({
       open: true,
       message: message,
       Transition,
-    }));
+    });
   };
 
+
   const handleClose = () => {
-    setOpenToast((prev) => ({
-      ...prev,
+    setOpenToast({
+      ...openToast,
       open: false,
-    }));
+    });
   };
 
   return (
-    <SnackBarContext.Provider value={{ openToast,openSnackBar, handleClose }}>
+    <SnackBarContext.Provider
+      value={{ openToast, handleClickSnackBar, handleClose }}
+    >
       {children}
     </SnackBarContext.Provider>
   );
