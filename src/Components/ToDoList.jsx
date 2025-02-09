@@ -31,10 +31,8 @@ const ToDoList = () => {
   const [filter, setFilter] = useState("all");
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openRemoveDialog, setOpenRemoveDialog] = useState(false);
-  const [updateInput, setUpdateInput] = useState({
-    newTaskName: "",
-    newDetails: "",
-  });
+  const newTaskNameRef = useRef(null);
+  const newDetailsRef = useRef(null);
 
   const { todos, dispatch } = useTodosContext();
 
@@ -47,7 +45,6 @@ const ToDoList = () => {
     });
   }, [todos, filter]);
 
-
   const handelRemoveDialogOpen = useCallback((task) => {
     setTask(task);
     setOpenRemoveDialog((prev) => !prev);
@@ -59,8 +56,14 @@ const ToDoList = () => {
 
   const handelEditDialogOpen = useCallback((task) => {
     setTask(task);
-    setUpdateInput({ newTaskName: task?.taskName, newDetails: task?.details });
     setOpenEditDialog(true);
+
+    setTimeout(() => {
+      if (newTaskNameRef.current && newDetailsRef.current) {
+        newTaskNameRef.current.value = task.taskName;
+        newDetailsRef.current.value = task.details;
+      }
+    }, 0);
   }, []);
 
   const handelEditDialogClose = () => {
@@ -84,7 +87,8 @@ const ToDoList = () => {
       type: "UPDATE_TASK",
       payload: {
         task: task,
-        updateInput: updateInput,
+        newTaskName: newTaskNameRef.current?.value,
+        newDetails: newDetailsRef.current?.value,
       },
     });
     handleClickSnackBar("Task updated successfully");
@@ -112,12 +116,7 @@ const ToDoList = () => {
         }
       }
     },
-    [
-      openEditDialog,
-      openRemoveDialog,
-      handleEditUpdate,
-      handleRemoveConfirm,
-    ]
+    [openEditDialog, openRemoveDialog, handleEditUpdate, handleRemoveConfirm]
   );
 
   useEffect(() => {
@@ -157,23 +156,23 @@ const ToDoList = () => {
           <>
             <TextField
               fullWidth
+              inputRef={newTaskNameRef}
               margin="dense"
-              value={updateInput.newTaskName}
               label="New Task Name"
               variant="outlined"
-              onChange={(e) =>
-                setUpdateInput({ ...updateInput, newTaskName: e.target.value })
-              }
+              // onChange={(e) =>
+              //   setUpdateInput({ ...updateInput, newTaskName: e.target.value })
+              // }
             />
             <TextField
               fullWidth
+              inputRef={newDetailsRef}
               margin="dense"
-              value={updateInput.newDetails}
               label="Details"
               variant="outlined"
-              onChange={(e) =>
-                setUpdateInput({ ...updateInput, newDetails: e.target.value })
-              }
+              // onChange={(e) =>
+              //   setUpdateInput({ ...updateInput, newDetails: e.target.value })
+              // }
             />
           </>
         }
@@ -232,7 +231,7 @@ const ToDoList = () => {
             >
               <Grid size={8}>
                 <TextField
-                    inputRef={inputRef}
+                  inputRef={inputRef}
                   label="Add Task"
                   variant="outlined"
                   className="!w-full !h-full"
